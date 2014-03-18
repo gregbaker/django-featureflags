@@ -4,12 +4,40 @@ A feature flags/toggle module for Django that allows you to quickly and temporar
 
 ## Installing and Configuring
 
-
 * `FEATUREFLAGS_LOADER`: The module responsible for loading the list of currently-disabled features. See [Disabling Features](#disabling) below.  Default: `'featureflags.loaders.settings_loader'`
 * `FEATUREFLAGS_DISABLED_VIEW`: The view function to be called when a view is disabled with the `uses_feature` decorator. Default: `'featureflags.views.service_unavailable'`
 * `DEFAULT_TEMPLATE`: If using the `'featureflags.views.service_unavailable'` view, the template that should be rendered. Default is `503.html` if present, or a very simple internal message if not.
 * `FEATUREFLAGS_CACHE_TIMEOUT`: The number of seconds that the currently-disabled features should be cached using Django's default cache. If set to zero, caching flags will be disabled and the loader will be called for every request. The default is 10 seconds.
 * Additional settings may be used depending on the loader used. These are described below.
+
+# Marking Features
+
+In order to do its job, your code must indicate which logic uses which features. The easiest is using the decorator for view functions:
+
+    from featureflags.flags import uses_feature
+    
+    @uses_feature('post_comment')
+    def new_comment(request):
+        # ...
+
+    @uses_feature('post_comment')
+    def edit_comment(request, comment_id):
+        # ...
+
+Now if you disable the `'post_comment'` feature, both of these views will return a "503 Service Unavailable" error.
+
+It would probably be wise to document the feature strings used in your project.
+
+You can also make lower-level calls to determine what features are disabled. This can be used anywhere in your code. For example,
+
+    from featureflags.flags import feature_disabled
+    
+    def generate_report_data():
+        if feature_disabled('big_reports'):
+            return []
+        # ...
+
+In this case, how to best handle a disabled feature is your problem.
 
 
 ## Disabling Features <a name="disabling"></a>
@@ -34,8 +62,6 @@ Then in the `disabled_features.json` file, have content like one of these:
 
     []
     ["big_reports", "post_comment"]
-
-
 
 ### Loading from other places
 
