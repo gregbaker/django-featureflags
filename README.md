@@ -6,9 +6,9 @@ A feature flags/toggle module for Django that allows you to quickly and temporar
 
 * `FEATUREFLAGS_LOADER`: The module responsible for loading the list of currently-disabled features. See [Disabling Features](#disabling) below.  Default: `'featureflags.loaders.settings_loader'`
 * `FEATUREFLAGS_DISABLED_VIEW`: The view function to be called when a view is disabled with the `uses_feature` decorator. Default: `'featureflags.views.service_unavailable'`
-* `DEFAULT_TEMPLATE`: If using the `'featureflags.views.service_unavailable'` view, the template that should be rendered. Default is `503.html` if present, or a very simple internal message if not.
+* `FEATUREFLAGS_DEFAULT_TEMPLATE`: If using the `'featureflags.views.service_unavailable'` view, the template that should be rendered. Default is `503.html` if present, or a very simple internal message if not.
 * `FEATUREFLAGS_CACHE_TIMEOUT`: The number of seconds that the currently-disabled features should be cached using Django's default cache. If set to zero, caching flags will be disabled and the loader will be called for every request. The default is 10 seconds.
-* Additional settings may be used depending on the loader used. These are described below.
+* Additional settings may be available (or necessary) depending on the loader used. These are described below.
 
 # Marking Features
 
@@ -44,10 +44,10 @@ In this case, how to best handle a disabled feature is your problem.
 
 ### Loading from `settings.py`
 
-The default `FEATUREFLAGS_LOADER` is `'featureflags.loaders.settings_loader'`. It looks at the setting `DISABLED_FEATURES` for the currently-disabled features. It can be set like one of these:
+The default `FEATUREFLAGS_LOADER` is `'featureflags.loaders.settings_loader'`. It looks at the setting `FEATUREFLAGS_DISABLE` for the currently-disabled features. It can be set like one of these:
 
-    DISABLED_FEATURES = set() # nothing disabled: normal operation
-    DISABLED_FEATURES = set(['big_reports', 'post_comment'])
+    FEATUREFLAGS_DISABLE = set() # nothing disabled: normal operation
+    FEATUREFLAGS_DISABLE = set(['big_reports', 'post_comment'])
 
 Putting disabled features in `settings.py` requires a code-restart if you want to disable features: this might not be desirable.
 
