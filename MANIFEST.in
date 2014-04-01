@@ -1,0 +1,7 @@
+include LICENSE
+include README.md
+recursive-include featureflags/loaders *
+recursive-exclude featureflags/loaders *.pyc
+recursive-include featureflags/management *
+recursive-exclude featureflags/management *.pyc
+recursive-include featureflags/templates *
