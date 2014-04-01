@@ -42,6 +42,8 @@ In this case, how to best handle a disabled feature is your problem.
 
 ## Disabling Features <a name="disabling"></a>
 
+This app uses the Django cache infrastructure to temporarily store the set of disabled features. So if you have multiple servers, any that share a (default) cache will have the same sets of features disabled.
+
 ### Loading from `settings.py`
 
 The default `FEATUREFLAGS_LOADER` is `'featureflags.loaders.settings_loader'`. It looks at the setting `FEATUREFLAGS_DISABLE` for the currently-disabled features. It can be set like one of these:
@@ -49,7 +51,7 @@ The default `FEATUREFLAGS_LOADER` is `'featureflags.loaders.settings_loader'`. I
     FEATUREFLAGS_DISABLE = set() # nothing disabled: normal operation
     FEATUREFLAGS_DISABLE = set(['big_reports', 'post_comment'])
 
-Putting disabled features in `settings.py` requires a code-restart if you want to disable features: this might not be desirable.
+Putting disabled features in `settings.py` requires a code-restart if you want to disable features: this might not be desirable. (But you can still [panic](#panic) without a code restart.)
 
 ### Loading from a JSON file
 
@@ -66,6 +68,21 @@ Then in the `disabled_features.json` file, have content like one of these:
 ### Loading from other places
 
 TODO
+
+
+## Panicking <a name="panic"></a>
+
+Since we're planning for problems, it's difficult to know when and how your feature flags will be used. You can define a set of features to disable quickly in your `settings.py` like this:
+
+    FEATUREFLAGS_PANIC_DISABLE = set(['authenticate', 'post_story', 'post_comment'])
+
+Then if you actually do find yourself in a panic situation, simply get to a command-line and:
+
+    python manage.py panic
+
+This will disable the `FEATUREFLAGS_PANIC_DISABLE` features for `FEATUREFLAGS_PANIC_TIMEOUT` seconds (default 60). Hopefully that buys you enough time to figure out what's going wrong. You can return to normal operation like this:
+
+    python manage.py unpanic
 
 
 ## About Feature Flags
